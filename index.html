@@ -55,24 +55,26 @@
       }
 
       const count = parseInt(match[1], 10);
-      const baseUrl = input.replace("thumbs", "fullwatermarked");
-      const prefixMatch = baseUrl.match(/(.+_)(\d{6})\d{3}\.jpg$/);
 
-      if (!prefixMatch) {
-        alert("Could not parse base URL for image generation.");
+      // Replace "thumbs" with "fullwatermarked"
+      const updatedBaseUrl = input.replace('/thumbs/', '/fullwatermarked/');
+
+      // Extract everything up to the last 3 digits before .jpg
+      const baseMatch = updatedBaseUrl.match(/(.+_)(\d{3})(\.jpg)$/);
+
+      if (!baseMatch) {
+        alert("Could not parse base URL properly.");
         return;
       }
 
-      const prefix = prefixMatch[1];
-      const folderPartMatch = baseUrl.match(/(.+\/)fullwatermarked\//);
-      const folderPath = folderPartMatch ? folderPartMatch[1] : '';
-
+      const prefix = baseMatch[1];
+      const suffix = baseMatch[3]; // .jpg
       const imageContainer = document.getElementById('imageContainer');
-      imageContainer.innerHTML = ''; // Clear any existing images
+      imageContainer.innerHTML = ''; // Clear existing images
 
       for (let i = 1; i <= count; i++) {
         const numStr = padNumber(i);
-        const imgUrl = `${folderPath}fullwatermarked/${prefix}${numStr}.jpg`;
+        const imgUrl = `${prefix}${numStr}${suffix}`;
 
         const img = document.createElement('img');
         img.src = imgUrl;
