@@ -25,6 +25,10 @@
       flex-wrap: wrap;
       gap: 10px;
     }
+    .images a {
+      display: inline-block;
+      text-decoration: none;
+    }
     .images img {
       max-width: 200px;
       height: auto;
@@ -55,11 +59,7 @@
       }
 
       const count = parseInt(match[1], 10);
-
-      // Replace "/thumbs/" with "/fullwatermarked/"
       const updatedBaseUrl = input.replace('/thumbs/', '/fullwatermarked/');
-
-      // Match parts of the filename before and after the 3-digit image number
       const fileMatch = updatedBaseUrl.match(/(.*_)(\d{6})(\d{3})(\.jpg)$/);
 
       if (!fileMatch) {
@@ -72,16 +72,22 @@
       const fileExt = fileMatch[4];    // .jpg
 
       const imageContainer = document.getElementById('imageContainer');
-      imageContainer.innerHTML = ''; // Clear existing images
+      imageContainer.innerHTML = '';
 
       for (let i = 1; i <= count; i++) {
         const numStr = padNumber(i);
         const imgUrl = `${pathPrefix}${galleryId}${numStr}${fileExt}`;
 
+        const link = document.createElement('a');
+        link.href = imgUrl;
+        link.target = '_blank';
+
         const img = document.createElement('img');
         img.src = imgUrl;
         img.alt = `Image ${i}`;
-        imageContainer.appendChild(img);
+
+        link.appendChild(img);
+        imageContainer.appendChild(link);
       }
     }
   </script>
