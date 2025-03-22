@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+    .images {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .images img {
+      max-width: 200px;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
 
+  <h2>Enter Image URL</h2>
+  <input type="text" id="urlInput" placeholder="Paste image URL here">
+  <button onclick="generateImages()">Show Images</button>
+
+  <div class="images" id="imageContainer"></div>
+
+  <script>
+    function padNumber(num) {
+      return num.toString().padStart(3, '0');
+    }
+
+    function generateImages() {
+      const input = document.getElementById('urlInput').value.trim();
+      const match = input.match(/(\d{3})(?=\.jpg$)/);
+
+      if (!match) {
+        alert("Invalid URL or format. Make sure it ends with a three-digit number and .jpg");
+        return;
+      }
+
+      const count = parseInt(match[1], 10);
+      const baseUrl = input.replace("thumbs", "fullwatermarked");
+      const prefixMatch = baseUrl.match(/(.+_)(\d{6})\d{3}\.jpg$/);
+
+      if (!prefixMatch) {
+        alert("Could not parse base URL for image generation.");
+        return;
+      }
+
+      const prefix = prefixMatch[1];
+      const folderPartMatch = baseUrl.match(/(.+\/)fullwatermarked\//);
+      const folderPath = folderPartMatch ? folderPartMatch[1] : '';
+
+      const imageContainer = document.getElementById('imageContainer');
+      imageContainer.innerHTML = ''; // Clear any existing images
+
+      for (let i = 1; i <= count; i++) {
+        const numStr = padNumber(i);
+        const imgUrl = `${folderPath}fullwatermarked/${prefix}${numStr}.jpg`;
+
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.alt = `Image ${i}`;
+        imageContainer.appendChild(img);
+      }
+    }
+  </script>
+
+</body>
+</html>
