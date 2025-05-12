@@ -48,44 +48,48 @@
     function padNumber(num) {
       return num.toString().padStart(3, '0');
     }
-
+    
     function generateImages() {
       const input = document.getElementById('urlInput').value.trim();
       const match = input.match(/(\d{3})(?=\.jpg$)/);
-
+    
       if (!match) {
         alert("Invalid URL or format. Make sure it ends with a three-digit number and .jpg");
         return;
       }
-
+    
       const count = parseInt(match[1], 10);
-      const updatedBaseUrl = input.replace('/thumbs/', '/fullwatermarked/');
-      const fileMatch = updatedBaseUrl.match(/(.*_)(\d{6})(\d{3})(\.jpg)$/);
-
+      const updatedUrl = input.replace('/thumbs/', '/fullwatermarked/');
+    
+      // Match both URL patterns
+      const fileMatch = updatedUrl.match(/^(.*\/)(img_)(\d{4})(\d{3})(\.jpg)$/);
+    
       if (!fileMatch) {
         alert("Could not parse base URL properly.");
         return;
       }
-
-      const pathPrefix = fileMatch[1];
-      const galleryId = fileMatch[2];
-      const fileExt = fileMatch[4];    // .jpg
-
+    
+      const pathPrefix = fileMatch[1];     // e.g., https://.../fullwatermarked/
+      const filenamePrefix = fileMatch[2]; // e.g., img_
+      const galleryId = fileMatch[3];      // e.g., 0156 (first part)
+      const lastDigits = fileMatch[4];     // e.g., 003 (used for image count)
+      const fileExt = fileMatch[5];        // .jpg
+    
       const imageContainer = document.getElementById('imageContainer');
       imageContainer.innerHTML = '';
-
+    
       for (let i = 1; i <= count; i++) {
         const numStr = padNumber(i);
-        const imgUrl = `${pathPrefix}${galleryId}${numStr}${fileExt}`;
-
+        const imgUrl = `${pathPrefix}${filenamePrefix}${galleryId}${numStr}${fileExt}`;
+    
         const link = document.createElement('a');
         link.href = imgUrl;
         link.target = '_blank';
-
+    
         const img = document.createElement('img');
         img.src = imgUrl;
         img.alt = `Image ${i}`;
-
+    
         link.appendChild(img);
         imageContainer.appendChild(link);
       }
