@@ -51,36 +51,36 @@
     
     function generateImages() {
       const input = document.getElementById('urlInput').value.trim();
-      const match = input.match(/(\d{3})(?=\.jpg$)/);
     
-      if (!match) {
-        alert("Invalid URL or format. Make sure it ends with a three-digit number and .jpg");
+      // Ensure /thumbs/ exists
+      if (!input.includes('/thumbs/')) {
+        alert("URL must contain /thumbs/");
         return;
       }
     
-      const count = parseInt(match[1], 10);
-      const updatedUrl = input.replace('/thumbs/', '/fullwatermarked/');
+      // Replace thumbs with fullwatermarked
+      const updatedBaseUrl = input.replace('/thumbs/', '/fullwatermarked/');
     
-      // Match both URL patterns
-      const fileMatch = updatedUrl.match(/^(.*\/)(img_)(\d{4})(\d{3})(\.jpg)$/);
-    
+      // Extract base filename and number
+      const fileMatch = updatedBaseUrl.match(/^(.*\/)([^\/]+?)(\d{3})(\.jpg)$/);
       if (!fileMatch) {
-        alert("Could not parse base URL properly.");
+        alert("Could not parse the filename properly. Make sure it ends in a 3-digit number followed by .jpg");
         return;
       }
     
-      const pathPrefix = fileMatch[1];     // e.g., https://.../fullwatermarked/
-      const filenamePrefix = fileMatch[2]; // e.g., img_
-      const galleryId = fileMatch[3];      // e.g., 0156 (first part)
-      const lastDigits = fileMatch[4];     // e.g., 003 (used for image count)
-      const fileExt = fileMatch[5];        // .jpg
+      const basePath = fileMatch[1];       // Full path to image folder
+      const filenamePrefix = fileMatch[2]; // Part of the filename before the number
+      const lastDigits = fileMatch[3];     // The number (e.g. 156 or 113)
+      const fileExt = fileMatch[4];        // .jpg
+    
+      const count = parseInt(lastDigits, 10); // Number of images to show
     
       const imageContainer = document.getElementById('imageContainer');
       imageContainer.innerHTML = '';
     
       for (let i = 1; i <= count; i++) {
         const numStr = padNumber(i);
-        const imgUrl = `${pathPrefix}${filenamePrefix}${galleryId}${numStr}${fileExt}`;
+        const imgUrl = `${basePath}${filenamePrefix}${numStr}${fileExt}`;
     
         const link = document.createElement('a');
         link.href = imgUrl;
